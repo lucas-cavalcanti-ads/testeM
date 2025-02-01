@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { getRunnerByEmail, createOrUpdateRunner } from "../services/api";
-import Header from "../styles/Header";
-import Footer from "../styles/Footer";
+import CountdownDisplay from "../components/CountdownDisplay";
 import RegisterForm from "../components/RegisterForm";
 import RunnerDetails from "../components/RunnerDetails";
 import useWorkouts from "../hooks/useWorkouts";
-import CountdownDisplay from "../components/CountdownDisplay";
-import { DEFAULT_WORKOUTS } from "../utils/constants";
+import { createOrUpdateRunner, getRunnerByEmail } from "../services/runnerService";
+import Footer from "../styles/Footer";
+import Header from "../styles/Header";
 import "../styles/Home.css";
+import { apiConstants } from "../utils/apiConstants";
+import { DEFAULT_WORKOUTS } from "../utils/constants";
 
 const Home = () => {
   const [selectedRunner, setSelectedRunner] = useState(null);
@@ -16,10 +17,11 @@ const Home = () => {
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const { weeks, setWeeks, loadWorkouts } = useWorkouts();
 
+  const title = "PERSONAL MARATHON";
+  
   const handleSearch = async () => {
-    if (!email) return setError("Por favor, insira um e-mail.");
-    setError("");
-
+   return !email?  setError("Por favor, insira um e-mail.") : setError("")
+    
     try {
       const response = await getRunnerByEmail(email);
       setSelectedRunner(response.data);
@@ -29,11 +31,11 @@ const Home = () => {
     }
   };
 
-  const cadastrarTreinosPadrao = async (email) => {
+  const cadastrarTreinosPadrao = async (email) => { // [MIGRAR ESSE METODO PARA ALGUMA SERVICE E TRADUIR PARA PORTUGUES]
     try {
       await Promise.all(
         DEFAULT_WORKOUTS.map((treino) => {
-          const url = `http://localhost:8080/workout/${email}`;
+          const url = apiConstants.BASE_URL + apiConstants.URI_CREATE_OR_UPDATE_WORKOUT + `${email}`;
           return fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -69,7 +71,7 @@ const Home = () => {
       const { monday, tuesday, wednesday, thursday, friday, saturday, sunday } = week.workout;
       const trainingWeek = { monday, tuesday, wednesday, thursday, friday, saturday, sunday };
 
-      const url = `http://localhost:8080/workout/${selectedRunner.email}`;
+      const url = apiConstants.BASE_URL + apiConstants.URI_CREATE_OR_UPDATE_WORKOUT + `${selectedRunner.email}`;
 
       let longRunDurationFormatted = "00:00:00";
 
@@ -122,7 +124,7 @@ const Home = () => {
     if (selectedRunner && week) {
       const { longRunDistance, longRunDurationMinutes, workout } = week;
   
-      const url = `http://localhost:8080/workout/${selectedRunner.email}/${week.week}?distance=${longRunDistance}&duration=${longRunDurationMinutes}`;
+      const url = apiConstants.BASE_URL + apiConstants.URI_CREATE_OR_UPDATE_WORKOUT + `${selectedRunner.email}/${week.week}?distance=${longRunDistance}&duration=${longRunDurationMinutes}`;      
   
       try {
         const response = await fetch(url, {
@@ -162,7 +164,7 @@ const Home = () => {
     <div className="container">
       <Header />
       <main className="main-content">
-        <h1 className="title">PERSONAL MARATHON</h1>
+        <h1 className="title">{ title }</h1>
         {error && <p className="error">{error}</p>}
 
         {!selectedRunner && !showRegisterForm && (
