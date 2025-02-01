@@ -1,9 +1,9 @@
 
 import React, { useEffect, useState } from "react";
-import { getRunners } from "../services/api";
 import { Link } from "react-router-dom";
-import Header from "../styles/Header.js"; // Importando Header
+import { getRunners } from "../services/runnerService.js";
 import Footer from "../styles/Footer.js"; // Importando Footer
+import Header from "../styles/Header.js"; // Importando Header
 import '../styles/Home.css'; // Para as estilizações gerais
 import '../styles/Runner.css'; // Importando o CSS específico para o Runner
 
